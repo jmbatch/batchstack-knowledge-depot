@@ -1,20 +1,52 @@
 # Debian (backport)
+## Update and install
+
+1) Update package list
 ```bash
-# Update package list
 sudo apt update
+```
 
-# Install prerequisites
+2) Install prerequisites
+```bash
 sudo apt install -y software-properties-common
+```
 
-# 1) Add backports (Debian 12 = bookworm)
+3) Add backports (Debian 12 = bookworm)
+```bash
 echo 'deb http://deb.debian.org/debian bookworm-backports main' | sudo tee /etc/apt/sources.list.d/backports.list
+```
 
-# 2) Update and install from backports
+4) Update and install from backports
+```
 sudo apt update
 sudo apt -t bookworm-backports install ansible  # or ansible-core
 ```
 
-# Ubuntu
+## Pin Ansible to Backports
+1) Create a pinning config file
+```bash
+sudo nano /etc/apt/preferences.d/ansible-backports.pref
+```
+
+2) Add these lines in the file
+```yaml
+Package: ansible ansible-core
+Pin: release a=bookworm-backports
+Pin-Priority: 990
+```
+- Explanation
+- `Package:` -> only applies to ansible and ansible-core
+- `Pin:` -> targets backport repo
+- `Pin-Priority:` -> higher than default (500) so apt prefers backports
+
+3) Verify which version apt will pick
+```bash
+apt policy ansible
+```
+
+---
+
+ # Ubuntu
 ```bash
 # Update package list
 sudo apt update
