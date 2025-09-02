@@ -1,6 +1,7 @@
 # Setting up an Ansible project
 
 ## Download an init shell script
+
 ```bash
 # save it
 curl -sSL https://gist.githubusercontent.com/placeholder/ansible-lab-init.sh -o ansible-lab-init.sh

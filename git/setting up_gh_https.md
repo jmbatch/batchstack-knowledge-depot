@@ -1,4 +1,5 @@
 # Setting up gh https
+
 ```bash
 ## Install gh
 sudo apt install gh
@@ -8,6 +9,7 @@ gh auth login
 ```
 
 ## Example
+
 ```bash
 (.venv) jmbatch@jb-pc-01:~/dev/batchstack$ gh auth login
 ? What account do you want to log into? GitHub.com
@@ -24,7 +26,8 @@ Press Enter to open github.com in your browser...
 (.venv) jmbatch@jb-pc-01:~/dev/batchstack$
 ```
 
-# Initialize and publish a repo
+## Initialize and publish a repo
+
 ```bash
 # 1) Initialize git in your project
 git init

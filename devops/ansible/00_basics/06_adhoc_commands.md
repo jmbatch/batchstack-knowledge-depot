@@ -1,7 +1,9 @@
 # Basic Commands
+
 - Syntax: `ansible <host-pattern> -m <module-name> -a “<module-arguments>”`
 
 ## Examples
+
 ```bash
 # Ping all hosts
 ansible all -i hosts.ini -m ping
@@ -29,6 +31,7 @@ ansible myserver -i hosts.ini -m command -a "hostname"
 ```
 
 ## File operations
+
 ```bash
 # Copy a file from Control Node to Host
 ansible all -i hosts.ini -m copy -a "src=/path/to/source dest=/path/to/destination"
@@ -50,6 +53,7 @@ ansible all -i hosts.ini -m file -a "src=/path/to/source dest=/path/to/symlink s
 ```
 
 ## Users and groups using the user module
+
 ```bash
 # Create a user (password must be hashed to use this method)
 ansible all -i hosts.ini -m user -a "name=’username’ password=’<hashed_password>’ state=present" —-become —-ask-become-pass
@@ -62,6 +66,7 @@ ansible all -i hosts.ini -m user -a "name=username groups=admin append=yes"
 ```
 
 ## Package Management
+
 ```bash
 # Install a package using apt
 ansible all -i hosts.ini -m apt -a "name=nginx state=present" --become
@@ -86,6 +91,7 @@ ansible all -i hosts.ini -m yum -a "upgrade=dist" --become
 ```
 
 ## Managing services on hosts using service and systemd modules
+
 ```bash
 # Start a service
 ansible all -i hosts.ini -m service -a "name=nginx state=started"
@@ -101,6 +107,7 @@ ansible all -i hosts.ini -m systemd -a "name=nginx enabled=yes"
 ```
 
 ## Reboot and shutting down hosts
+
 ```bash
 # Reboot all hosts
 ansible all -i hosts.ini -m reboot
@@ -110,6 +117,7 @@ ansible all -i hosts.ini -m command -a "/sbin/shutdown -h now"
 ```
 
 ## Mounting disk operations
+
 ```bash
 # Mount a file system
 ansible all -i hosts.ini -m mount -a "path=/mnt/mydisk src=/dev/sdb1 fstype=ext4 state=mounted"
@@ -119,6 +127,7 @@ ansible all -i hosts.ini -m mount -a "path=/mnt/mydisk state=unmounted"
 ```
 
 ## Using Cron module to manage cron jobs
+
 ```bash
 # Create a cron job
 ansible -all -i hosts.ini -m cron -a "name='Backup' minute=0 hour=2 job='/usr/local/bin/backup.sh'"

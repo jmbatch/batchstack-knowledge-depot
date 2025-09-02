@@ -1,3 +1,5 @@
+# User Management Basics
+
 ```bash
 # create a new user
 sudo adduser dwight

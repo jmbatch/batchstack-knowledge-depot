@@ -1,6 +1,7 @@
 # debian_package_management
 
-**Searching & inspecting packages**
+## Searching & inspecting packages
+
 | Action                             | Command                |
 | ---------------------------------- | ---------------------- |
 | Search for a package               | `apt search <package>` |
@@ -9,7 +10,8 @@
 | Find out which package owns a file | `dpkg -S <file_path>`  |
 | List manually installed packages   | `apt-mark showmanual`  |
 
-**Installing & removing packages**
+## Installing & removing packages
+
 | Action                         | Command                                                                  |
 | ------------------------------ | ------------------------------------------------------------------------ |
 | Install a package              | `apt install <package>`                                                  |
@@ -19,7 +21,8 @@
 | Autoremove unused dependencies | `apt autoremove`                                                         |
 | Fix broken dependencies        | `apt --fix-broken install`                                               |
 
-**Updating & upgrading**
+## Updating & upgrading
+
 | Action                               | Command                 |
 | ------------------------------------ | ----------------------- |
 | Update package index                 | `apt update`            |
@@ -28,7 +31,8 @@
 | List upgradable packages             | `apt list --upgradable` |
 | Simulate upgrade (dry run)           | `apt -s upgrade`        |
 
-**Package info & dependencies**
+## Package info & dependencies
+
 | Action                         | Command                             |                  |
 | ------------------------------ | ----------------------------------- | ---------------- |
 | List dependencies of a package | `apt depends <package>`             |                  |
@@ -37,21 +41,23 @@
 | Check version installed        | `dpkg -l`                           | `grep <package>` |
 | List all installed packages    | `dpkg -l` or `apt list --installed` |                  |
 
-**System cleanup**
+## System cleanup
+
 | Action                       | Command         |
 | ---------------------------- | --------------- |
 | Clean local package cache    | `apt clean`     |
 | Remove partial package files | `apt autoclean` |
 
-**Troubleshooting**
+## Troubleshooting
+
 | Symptom                     | Fix                                                                   |
 | --------------------------- | --------------------------------------------------------------------- |
 | Broken `dpkg` state         | `dpkg --configure -a`                                                 |
 | Locked `apt` database       | `rm /var/lib/apt/lists/lock` and `rm /var/lib/dpkg/lock` (cautiously) |
 | Force reconfigure a package | `dpkg-reconfigure <package>`                                          |
 
+## Using aptitude
 
-**Using aptitude**
 ```bash
 apt install aptitude
 aptitude

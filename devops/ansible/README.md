@@ -3,6 +3,7 @@
 Welcome! This repo is my growing collection of Ansible notes, organized by topic.
 
 ## Learning Path
+
 1. [Basics](00_basics/)
 2. [Core Concepts](01_core_concepts/)
 3. [Modules](02_modules/)
@@ -12,6 +13,7 @@ Welcome! This repo is my growing collection of Ansible notes, organized by topic
 7. [Reference](99_reference/)
 
 ## Quick Links
+
 - [Playbook Parameters](01_core_concepts/playbook_parameters.md)
 - [Common Modules](02_modules/)
 - [Vault](04_advanced/vault.md)

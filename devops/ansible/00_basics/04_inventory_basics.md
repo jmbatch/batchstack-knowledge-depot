@@ -1,12 +1,14 @@
 # Inventory Basics
 
 ## What is an Inventory?
+
 - Tells Ansible **which hosts** to manage.
 - Can be **static** (INI/YAML file) or **dynamic** (cloud plugin).
 
 ---
 
 ## Static INI Example
+
 ```ini
 [debian]
 voip-staging-01 ansible_host=192.0.2.21
@@ -21,6 +23,7 @@ ansible_become=yes
 ```
 
 ## Static YAML Example
+
 ```yaml
 all:
   children:
@@ -40,6 +43,7 @@ all:
 ```
 
 ## Inventory Commands
+
 ```bash
 # Show inventory structure
 ansible-inventory -i inventories/lab/hosts.ini --graph
@@ -49,9 +53,9 @@ ansible-inventory -i inventories/lab/hosts.ini --list
 ```
 
 ## Special vars
+
 `ansible_host` → IP or DNS
 `ansible_user` → SSH user
 `ansible_port` → SSH port
 `ansible_become` → use sudo
 `ansible_ssh_private_key_file` → path to key
-

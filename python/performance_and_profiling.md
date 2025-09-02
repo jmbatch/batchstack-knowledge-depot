@@ -1,23 +1,31 @@
+# Performance and Profiling
 
-## timeit	
+## timeit
+
 - Benchmark small snippets
+
 ```bash
 python -m timeit "sum(range(1000))"
 ```
+
 ### timeit example
+
 ```bash
 jmbatch@jb-pc-01:~/dev/batchstack-knowledge-depot/python$ python3 -m timeit "sum(range(1000))"
 50000 loops, best of 5: 6.02 usec per loop
 jmbatch@jb-pc-01:~/dev/batchstack-knowledge-depot/python$
 ```
 
-## cProfile	
+## cProfile
+
 - Profile scripts
+
 ```bash
 python -m cProfile script.py
 ```
 
 ### cProfile example
+
 ```bash
 jmbatch@jb-pc-01:~/dev/batchstack-knowledge-depot/python$ python3 cprofile_demo.py 
          12 function calls in 1.501 seconds

@@ -1,36 +1,35 @@
-# Playbook-Level Keywords
+# Playbook Parameters Cheat Sheet
+
 - (Defined at the top of a play or in site.yml.)
 
-## Parameter | Meaning | Example
-- hosts: Which group(s) or host(s) from inventory this play targets	
-  - hosts: web
+## Top-Level Parameters
 
-- name:	Human-friendly description of the play	
-  - name: Configure web servers
+| Parameter        | Purpose                                         | Example |
+|------------------|-------------------------------------------------|---------|
+| `hosts`          | Which inventory group/hosts to target           | `hosts: web` |
+| `name`           | Human-readable description of the play          | `name: Configure webservers` |
+| `become`         | Escalate privileges (sudo)                      | `become: yes` |
+| `become_user`    | User to become                                  | `become_user: root` |
+| `gather_facts`   | Collect system info before running tasks         | `gather_facts: no` |
+| `vars`           | Inline variable definitions                     | `vars: { timezone: "UTC" }` |
+| `vars_files`     | External YAML variable files                     | `vars_files: [vars/common.yml]` |
+| `roles`          | Roles applied to this play                      | `roles: [common, web]` |
+| `tasks`          | Task list if not using roles                    | `tasks: ...` |
+| `handlers`       | Special tasks triggered by `notify`             | `handlers: ...` |
+| `tags`           | Labels to filter execution                      | `tags: [patch]` |
 
-- become:	Whether to escalate privilege (sudo, etc.)	
-  - become: yes
+---
 
-- become_user:	Which user to escalate to	
-  - become_user: root
+## Example Play
 
-- gather_facts:	Whether to collect facts (ansible_facts) about the system	
-  - gather_facts: no
-
-- vars:	Inline variables available to tasks in this play	
-  - vars: { timezone: "UTC" }
-
-- vars_files:	External YAML files that define vars	
-  - vars_files: [ "vars/common.yml" ]
-
-- roles:	List of roles to apply	
-  - roles: [common, ssh_hardening]
-
-- tasks:	List of tasks to run (if not using roles)
-  - tasks: ...
-
-- handlers:	Special tasks triggered by notify:	
-  - handlers: ...
-
-- tags:	Labels you can use to selectively run parts of a play	
-  - tags: [patch]
+```yaml
+- name: Configure web servers
+  hosts: web
+  become: yes
+  gather_facts: yes
+  vars:
+    timezone: "UTC"
+  roles:
+    - role: common
+    - role: webserver
+```

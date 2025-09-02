@@ -1,52 +1,64 @@
 # Debian (backport)
+
 ## Update and install
 
-1) Update package list
+Step 1: Update package list
+
 ```bash
 sudo apt update
 ```
 
-2) Install prerequisites
+Step 2: Install prerequisites
+
 ```bash
 sudo apt install -y software-properties-common
 ```
 
-3) Add backports (Debian 12 = bookworm)
+Step 3: Add backports (Debian 12 = bookworm)
+
 ```bash
 echo 'deb http://deb.debian.org/debian bookworm-backports main' | sudo tee /etc/apt/sources.list.d/backports.list
 ```
 
-4) Update and install from backports
-```
+Step 4: Update and install from backports
+
+```bash
 sudo apt update
 sudo apt -t bookworm-backports install ansible  # or ansible-core
 ```
 
 ## Pin Ansible to Backports
-1) Create a pinning config file
+
+Step 1: Create a pinning config file
+
 ```bash
 sudo nano /etc/apt/preferences.d/ansible-backports.pref
 ```
 
-2) Add these lines in the file
+Step 2: Add these lines in the file
+
 ```yaml
 Package: ansible ansible-core
 Pin: release a=bookworm-backports
 Pin-Priority: 990
 ```
-- Explanation
+
+Explanation:
+
 - `Package:` -> only applies to ansible and ansible-core
 - `Pin:` -> targets backport repo
 - `Pin-Priority:` -> higher than default (500) so apt prefers backports
 
-3) Verify which version apt will pick
+Step 3: Verify which version apt will pick
+
 ```bash
 apt policy ansible
 ```
 
 ---
 
- # Ubuntu
+## Ubuntu
+
 ```bash
 # Update package list
 sudo apt update
@@ -64,7 +76,8 @@ sudo apt install -y ansible
 ansible --version
 ```
 
-# Sanity check after install
+## Sanity check after install
+
 ```bash
 # Create a test inventory file
 echo "localhost ansible_connection=local" > hosts.ini
@@ -73,7 +86,8 @@ echo "localhost ansible_connection=local" > hosts.ini
 ansible -i hosts.ini all -m ping
 ```
 
-# Common post install steps
+## Common post install steps
+
 ```bash
 # Check where Ansible is installed
 which ansible
@@ -91,8 +105,8 @@ EOF
 echo "localhost ansible_connection=local" | sudo tee /etc/ansible/hosts
 ```
 
+## Install via pip
 
-# Install via pip
 ```bash
 # Make sure pip & venv are ready
 python3 -m pip install --upgrade pip setuptools wheel
@@ -106,7 +120,8 @@ pip install ansible
 ansible --version
 ```
 
-# Install via pipx
+## Install via pipx
+
 ```bash
 # Install pipx
 python3 -m pip install --user pipx
@@ -119,7 +134,8 @@ pipx install ansible
 ansible --version
 ```
 
-# RHEL / CentOS / Rocker
+## RHEL / CentOS / Rocker
+
 ```bash
 # Enable EPEL repo
 sudo dnf install -y epel-release
@@ -131,9 +147,9 @@ sudo dnf install -y ansible
 ansible --version
 ```
 
-# Fedora
+## Fedora
+
 ```bash
 sudo dnf install -y ansible
 ansible --version
 ```
-

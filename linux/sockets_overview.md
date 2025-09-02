@@ -1,4 +1,5 @@
-Overview of Sockets
+# Overview of Sockets
+
 A socket is a software endpoint used to send and receive data over a network. Sockets enable communication between two machines over protocols like TCP (Transmission Control Protocol) or UDP (User Datagram Protocol). They are essential for network programming, allowing processes to connect, send data, and receive data, typically using a combination of an IP address and a port number.
 
 There are two main types of sockets:
@@ -40,7 +41,6 @@ The socket is waiting for a period of time (usually twice the maximum segment li
 
 11. CLOSED
 The socket is not being used. This is the state when a socket is initially created or after it has been closed and is no longer in use.
-
 
 TCP Three-Way Handshake Overview
 Client sends SYN (SYN-SENT state)

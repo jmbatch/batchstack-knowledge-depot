@@ -1,9 +1,12 @@
-my first react project (next.js) — step-by-step
-0) prereqs
+# my first react project (next.js) — step-by-step
+
+Prereqs:
+
 - install Node.js LTS (18+).
 - in a terminal, pick/create a folder you don’t mind using.
 
-1) scaffold the app
+Step 1: scaffold the app
+
 ```bash
 npx create-next-app@latest ansible-map
 # when prompted:
@@ -15,12 +18,16 @@ npx create-next-app@latest ansible-map
 # ✔ import alias? → @/*
 cd ansible-map
 ```
-2) add tailwind css
+
+Step 2: add tailwind css
+
 ```bash
 npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
+
 Edit tailwind.config.js content to include all app files:
+
 ```js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -33,21 +40,27 @@ module.exports = {
   plugins: [],
 }
 ```
+
 Open ./src/app/globals.css and make sure it has:
+
 ```css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 ```
-3) install UI deps
+
+Step 3: install UI deps
+
 ```bash
 npm install lucide-react
 npx shadcn@latest init -d
 # add the components we use:
 npx shadcn@latest add card badge
 ```
+
 This creates /src/components/ui/ with card and badge.
 if the alias @/* didn’t get created, add jsconfig.json at project root:
+
 ```json
 {
   "compilerOptions": {
@@ -56,11 +69,14 @@ if the alias @/* didn’t get created, add jsconfig.json at project root:
   }
 }
 ```
-4) add your component
+
+Step 4: add your component
 Create src/components/AnsibleToolMap.jsx and paste the code from the canvas (it already imports from @/components/ui/... and lucide-react).
 
-5) render it on the homepage
+Step 5: render it on the homepage
+
 Edit src/app/page.js:
+
 ```jsx
 import AnsibleToolMap from "@/components/AnsibleToolMap";
 
@@ -72,8 +88,11 @@ export default function Page() {
   );
 }
 ```
-6) run it
+
+Step 6: run it
+
 ```bash
 npm run dev
 ```
+
 Open http://localhost:3000

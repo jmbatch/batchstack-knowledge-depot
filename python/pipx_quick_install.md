@@ -1,4 +1,4 @@
-### pipx quick install
+# pipx quick install
 
 ```bash
 pipx install poetry
