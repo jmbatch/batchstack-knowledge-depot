@@ -15,74 +15,74 @@ sudo apt install -y build-essential libssl-dev libncurses5-dev libnewt-dev \ lib
 
 1. Download/Install/Configure PJSIP source code
 
-```bash
-# Download PJSIP source code
-cd /usr/src
-sudo wget https://github.com/pjsip/pjproject/archive/refs/tags/2.14.tar.gz
+    ```bash
+    # Download PJSIP source code
+    cd /usr/src
+    sudo wget https://github.com/pjsip/pjproject/archive/refs/tags/2.14.tar.gz
 
-# Extract tarball
-sudo tar -xvf 2.14.tar.gz 
-cd pjproject-2.14
+    # Extract tarball
+    sudo tar -xvf 2.14.tar.gz 
+    cd pjproject-2.14
 
-# Install dependencies 
-sudo apt update 
-sudo apt install -y libssl-dev libasound2-dev libsrtp2-dev libopus-dev \ libavformat-dev libswscale-dev libtool autoconf automake cmake g++ \ 
-libspeexdsp-dev libglib2.0-dev libv4l-dev
+    # Install dependencies 
+    sudo apt update 
+    sudo apt install -y libssl-dev libasound2-dev libsrtp2-dev libopus-dev \ libavformat-dev libswscale-dev libtool autoconf automake cmake g++ \ 
+    libspeexdsp-dev libglib2.0-dev libv4l-dev
 
-# Configure the build
-sudo ./configure --enable-shared --disable-sound --disable-resample --disable-video --disable-opencore-amr
+    # Configure the build
+    sudo ./configure --enable-shared --disable-sound --disable-resample --disable-video --disable-opencore-amr
 
-'''
-Explanation of flags:
+    '''
+    Explanation of flags:
 
-- **`--enable-shared`**: Build shared libraries.
-- **`--disable-sound`**: Disable sound support if not needed.
-- **`--disable-resample`**: Skip resampling support if not needed.
-- **`--disable-video`**: Skip video support (useful for SIP-only applications).
-- **`--disable-opencore-amr`**: Skip OpenCORE AMR codec support if not needed.
-'''
+    - **`--enable-shared`**: Build shared libraries.
+    - **`--disable-sound`**: Disable sound support if not needed.
+    - **`--disable-resample`**: Skip resampling support if not needed.
+    - **`--disable-video`**: Skip video support (useful for SIP-only applications).
+    - **`--disable-opencore-amr`**: Skip OpenCORE AMR codec support if not needed.
+    '''
 
-# Build and Install
-sudo make dep 
-sudo make 
-sudo make install
+    # Build and Install
+    sudo make dep 
+    sudo make 
+    sudo make install
 
-# Update Library Cache
-## Update the shared library cache so the system recognizes the new libraries:
-sudo ldconfig
+    # Update Library Cache
+    ## Update the shared library cache so the system recognizes the new libraries:
+    sudo ldconfig
 
-# Verify Installation
-ldconfig -p | grep pj
-```
+    # Verify Installation
+    ldconfig -p | grep pj
+    ```
 
 2. Download the Asterisk source code:
 
-```bash
-cd /usr/src 
-sudo wget https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-20-current.tar.gz
-sudo tar -zxvf asterisk-20-current.tar.gz 
-cd asterisk-20.*/
-```
+    ```bash
+    cd /usr/src 
+    sudo wget https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-20-current.tar.gz
+    sudo tar -zxvf asterisk-20-current.tar.gz 
+    cd asterisk-20.*/
+    ```
 
 3. Download the MP3 source (for MOH - Music on Hold)**:
 
-```bash
-sudo contrib/scripts/get_mp3_source.sh
-```
+    ```bash
+    sudo contrib/scripts/get_mp3_source.sh
+    ```
 
-1. Configure with PJSIP Support:
+4. Configure with PJSIP Support:
 
-PJSIP is included by default in modern Asterisk versions. Configure the build:
+PJSIP is included by default in modern Asterisk versions. Configure the build
 
-```bash
-sudo ./configure --with-ssl --with-srtp
-```
+    ```bash
+    sudo ./configure --with-ssl --with-srtp
+    ```
 
 5. Select PJSIP Modules in Menuselect:
 
-```bash
-sudo make menuselect
-```
+    ```bash
+    sudo make menuselect
+    ```
 
 In the **`menuselect`** interface:
 
