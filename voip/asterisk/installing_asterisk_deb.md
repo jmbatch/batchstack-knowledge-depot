@@ -70,82 +70,80 @@ sudo apt install -y build-essential libssl-dev libncurses5-dev libnewt-dev \ lib
     sudo contrib/scripts/get_mp3_source.sh
     ```
 
-4. Configure with PJSIP Support:
+4. Configure with PJSIP Support
 
-PJSIP is included by default in modern Asterisk versions. Configure the build
+    PJSIP is included by default in modern Asterisk versions. Configure the build
 
     ```bash
     sudo ./configure --with-ssl --with-srtp
     ```
 
-5. Select PJSIP Modules in Menuselect:
+5. Select PJSIP Modules in Menuselect
 
     ```bash
     sudo make menuselect
     ```
 
-In the **`menuselect`** interface:
+    In the **`menuselect`** interface:
 
-- Go to "Channel Drivers".
-- Ensure **`chan_pjsip`** and related modules like **`res_pjsip`**, **`res_pjsip_transport_websocket`**, and **`res_pjsip_outbound_registration`** are selected.
-- Optionally, deselect **`chan_sip`** since it’s deprecated.
+    - Go to "Channel Drivers".
+    - Ensure **`chan_pjsip`** and related modules like **`res_pjsip`**, **`res_pjsip_transport_websocket`**, and **`res_pjsip_outbound_registration`** are selected.
+    - Optionally, deselect **`chan_sip`** since it’s deprecated.
 
 6. Build and install Asterisk:
 
-```bash
-sudo make -j$(nproc) 
-sudo make install
-```
+    ```bash
+    sudo make -j$(nproc) 
+    sudo make install
+    ```
 
 7. Install Configurations and Service:
 
-```bash
-sudo make samples
-sudo make basic-pbx
-sudo make config 
-sudo ldconfig
-```
+    ```bash
+    sudo make samples
+    sudo make basic-pbx
+    sudo make config 
+    sudo ldconfig
+    ```
 
 8. Set Permissions:
 
-```bash
-sudo useradd -r -d /var/lib/asterisk -s /usr/sbin/nologin asterisk 
-sudo chown -R asterisk:asterisk /etc/asterisk /var/{lib,log,spool}/asterisk /usr/lib/asterisk 
-sudo chmod -R 750 /etc/asterisk
-```
+    ```bash
+    sudo useradd -r -d /var/lib/asterisk -s /usr/sbin/nologin asterisk 
+    sudo chown -R asterisk:asterisk /etc/asterisk /var/{lib,log,spool}/asterisk /usr/lib/asterisk 
+    sudo chmod -R 750 /etc/asterisk
+    ```
 
 9. Update Service File:
 
-Edit the service file:
+    Edit the service file:
 
-```bash
-sudo nano /etc/systemd/system/asterisk.service
-```
+    ```bash
+    sudo nano /etc/systemd/system/asterisk.service
+    ```
 
-Ensure the following lines are set:
+    Ensure the following lines are set:
 
-```ini
-User=asterisk 
-Group=asterisk
-```
+    ```ini
+    User=asterisk 
+    Group=asterisk
+    ```
 
 10. Start Asterisk:
 
-```bash
-sudo systemctl daemon-reload 
-sudo systemctl start asterisk 
-sudo systemctl enable asterisk
-```
+    ```bash
+    sudo systemctl daemon-reload 
+    sudo systemctl start asterisk 
+    sudo systemctl enable asterisk
+    ```
 
 11. Verify:
 
-```bash
-sudo asterisk -rvvv`
-```
+    ```bash
+    sudo asterisk -rvvv`
+    ```
 
-**This should drop you into the Asterisk CLI**
-
----
+    **This should drop you into the Asterisk CLI**
 
 ## 3. Configure Asterisk with PJSIP
 
@@ -153,60 +151,60 @@ PJSIP Configuration Files
 
 1. Edit `pjsip.conf`:
 
-```bash
-sudo nano /etc/asterisk/pjsip.conf
-```
+    ```bash
+    sudo nano /etc/asterisk/pjsip.conf
+    ```
 
-Here's a basic configuration for a peer and endpoint:
+    Here's a basic configuration for a peer and endpoint:
 
-```ini
-[transport-udp]
-type=transport
-protocol=udp
-bind=0.0.0.0:5060
+    ```ini
+    [transport-udp]
+    type=transport
+    protocol=udp
+    bind=0.0.0.0:5060
 
-[rtpengine-endpoint]
-type=endpoint
-transport=transport-udp
-context=default
-disallow=all
-allow=ulaw
-aors=rtpengine-aor
+    [rtpengine-endpoint]
+    type=endpoint
+    transport=transport-udp
+    context=default
+    disallow=all
+    allow=ulaw
+    aors=rtpengine-aor
 
-[rtpengine-aor]
-type=aor
-contact=sip:127.0.0.1:5060
+    [rtpengine-aor]
+    type=aor
+    contact=sip:127.0.0.1:5060
 
-[rtpengine-auth]
-type=auth
-auth_type=userpass
-username=rtpengine
-password=your_password_here
+    [rtpengine-auth]
+    type=auth
+    auth_type=userpass
+    username=rtpengine
+    password=your_password_here
 
-[rtpengine-registration]
-type=registration
-outbound_auth=rtpengine-auth
-server_uri=sip:127.0.0.1:5060
-client_uri=sip:rtpengine@127.0.0.1:5060
+    [rtpengine-registration]
+    type=registration
+    outbound_auth=rtpengine-auth
+    server_uri=sip:127.0.0.1:5060
+    client_uri=sip:rtpengine@127.0.0.1:5060
 
-```
+    ```
 
-- **Transport**: Defines the UDP transport layer.
-- **Endpoint**: Defines the peer configuration.
-- **AOR**: The Address of Record (location where the peer can be reached).
-- **Auth** and **Registration**: For outbound authentication if needed.
+    - **Transport**: Defines the UDP transport layer.
+    - **Endpoint**: Defines the peer configuration.
+    - **AOR**: The Address of Record (location where the peer can be reached).
+    - **Auth** and **Registration**: For outbound authentication if needed.
 
 2. Reload PJSIP Configuration:
 
-```bash
-sudo asterisk -rx "pjsip reload"
-```
+    ```bash
+    sudo asterisk -rx "pjsip reload"
+    ```
 
 3. Verify Configuration
 
-```bash
-sudo asterisk -rx "pjsip show endpoints"
-```
+    ```bash
+    sudo asterisk -rx "pjsip show endpoints"
+    ```
 
 ## 4. Configure RTPengine
 
@@ -214,49 +212,49 @@ If you haven't already installed RTPengine, follow these steps:
 
 1. Install Dependencies for RTPengine
 
-```bash
-sudo apt install -y iptables iptables-persistent libhiredis-dev libpcap-dev \ libssl-dev libxmlrpc-core-c3-dev libcurl4-openssl-dev libevent-dev \ libavcodec-dev libavfilter-dev libavformat-dev libavutil-dev libswscale-dev \ dkms debhelper default-libmysqlclient-dev gperf
-```
+    ```bash
+    sudo apt install -y iptables iptables-persistent libhiredis-dev libpcap-dev \ libssl-dev libxmlrpc-core-c3-dev libcurl4-openssl-dev libevent-dev \ libavcodec-dev libavfilter-dev libavformat-dev libavutil-dev libswscale-dev \ dkms debhelper default-libmysqlclient-dev gperf
+    ```
 
 2. Clone and Install RTPengine
 
-```bash
-cd /usr/src 
-sudo git clone https://github.com/sipwise/rtpengine.git 
-cd rtpengine 
-sudo ./debian/flavors/no_ngcp build 
-sudo dpkg -i ../rtpengine_*.deb
-```
+    ```bash
+    cd /usr/src 
+    sudo git clone https://github.com/sipwise/rtpengine.git 
+    cd rtpengine 
+    sudo ./debian/flavors/no_ngcp build 
+    sudo dpkg -i ../rtpengine_*.deb
+    ```
 
 3. Configure RTPengine
 
- Edit the RTPengine configuration file:
+    Edit the RTPengine configuration file:
 
-```bash
-sudo nano /etc/rtpengine/rtpengine.conf
-```
+    ```bash
+    sudo nano /etc/rtpengine/rtpengine.conf
+    ```
 
-Add or update the following lines:
+    Add or update the following lines:
 
-```ini
-[rtpengine] 
-interface = 127.0.0.1 
-port = 22222 
-log-level = 7
-```
+    ```ini
+    [rtpengine] 
+    interface = 127.0.0.1 
+    port = 22222 
+    log-level = 7
+    ```
 
 4. Start RTPengine
 
-```bash
-sudo systemctl start rtpengine 
-sudo systemctl enable rtpengine
-```
+    ```bash
+    sudo systemctl start rtpengine 
+    sudo systemctl enable rtpengine
+    ```
 
-Check the status:
+    Check the status:
 
-```bash
-sudo systemctl status rtpengine
-```
+    ```bash
+    sudo systemctl status rtpengine
+    ```
 
 ---
 
@@ -266,25 +264,25 @@ sudo systemctl status rtpengine
 
 1. Edit `sip.conf`:
 
-```bash
-sudo nano /etc/asterisk/sip.conf
-```
+    ```bash
+    sudo nano /etc/asterisk/sip.conf
+    ```
 
-Add or modify the SIP peer configuration:
+    Add or modify the SIP peer configuration:
 
-```bash
-[rtpengine] 
-type=peer 
-host=127.0.0.1 
-qualify=yes 
-context=default
-```
+    ```bash
+    [rtpengine] 
+    type=peer 
+    host=127.0.0.1 
+    qualify=yes 
+    context=default
+    ```
 
 2. Reload Asterisk:
 
-```bash
-sudo asterisk -rx "sip reload"
-```
+    ```bash
+    sudo asterisk -rx "sip reload"
+    ```
 
 ---
 
@@ -292,39 +290,39 @@ sudo asterisk -rx "sip reload"
 
 1. Create a Test Extension in `extensions.conf`:
 
-```bash
-sudo nano /etc/asterisk/extensions.conf
-```
+    ```bash
+    sudo nano /etc/asterisk/extensions.conf
+    ```
 
-Add a basic dial plan:
+    Add a basic dial plan:
 
-```bash
-[default] exten => 1001,1,Answer() same => n,Echo() same => n,Hangup()
-```
+    ```bash
+    [default] exten => 1001,1,Answer() same => n,Echo() same => n,Hangup()
+    ```
 
 2. Reload Dial Plan:
 
-```bash
-sudo asterisk -rx "dialplan reload"
-```
+    ```bash
+    sudo asterisk -rx "dialplan reload"
+    ```
 
 3. Test with a SIP Client (e.g., Linphone, Zoiper, etc.):
 
-- Register the client to Asterisk.
-- Dial `1001` to test the echo function.
+   - Register the client to Asterisk.
+   - Dial `1001` to test the echo function.
 
-1. Verify RTP:
+4. Verify RTP:
 
-Use the **Asterisk CLI** to monitor SIP calls:
+    Use the **Asterisk CLI** to monitor SIP calls:
 
-```bash
-sudo asterisk -rvvv
-```
+    ```bash
+    sudo asterisk -rvvv
+    ```
 
-Check RTP stream status:
+    Check RTP stream status:
 
-```bash
-rtp set debug on
-```
+    ```bash
+    rtp set debug on
+    ```
 
- **This will show RTP packet flow details, helping you verify if RTPengine is handling the media streams.**
+    **This will show RTP packet flow details, helping you verify if RTPengine is handling the media streams.**

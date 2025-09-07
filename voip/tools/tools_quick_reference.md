@@ -9,22 +9,26 @@
   ```bash
   sipp <DEST_IP>:<PORT> -sn options -s <EXT_OR_USER> -r 1 -m 1 -trace_err -trace_msg
   ```
+
 * **Basic INVITE call (UAC built‑in):**
 
   ```bash
   sipp <DEST_IP>:<PORT> -sn uac -s <DEST_NUMBER> -r 1 -m 1 -trace_err
   ```
+
 * **TLS (if server supports it):**
 
   ```bash
   sipp <DEST_IP>:<TLS_PORT> -tls -sn options -s <EXT>
   ```
+
 * **Custom scenario file:**
 
   ```bash
   sipp <DEST_IP>:<PORT> -sf ./myscenario.xml -m 10 -l 5 -r 2 -rp 1000
   # -m max calls • -l concurrent calls • -r calls/sec • -rp rate period (ms)
   ```
+
 * **Bind to local IP/port:**
 
   ```bash
@@ -38,16 +42,19 @@
   ```bash
   sudo sngrep -d any
   ```
+
 * **Filter by host/port:**
 
   ```bash
   sudo sngrep -d any "host <IP> or port 5060"
   ```
+
 * **Open a PCAP:**
 
   ```bash
   sngrep -I capture.pcap
   ```
+
 * **Save selected calls (F8 in UI) or export to PCAP/ASCII.**
 
 ### SIPVicious (svmap et al.)
@@ -57,6 +64,7 @@
   ```bash
   svmap udp://<DEST_IP>:5060 --method OPTIONS
   ```
+
 * **TCP example:**
 
   ```bash
@@ -64,8 +72,6 @@
   ```
 
   *Great for health checks; not a full UA.*
-
----
 
 ## Packet Capture & Analysis
 
@@ -76,6 +82,7 @@
   ```bash
   sudo tcpdump -i any -w sip_rtp.pcap '(port 5060) or (udp portrange 10000-20000)'
   ```
+
 * **Readable SIP (no write):**
 
   ```bash
@@ -91,6 +98,7 @@
     -T fields -e frame.time -e ip.src -e udp.srcport -e ip.dst -e udp.dstport \
     -e sip.Method -e sip.Status-Code
   ```
+
 * **Extract only RTP from a capture:**
 
   ```bash
@@ -102,8 +110,6 @@
 ```bash
 sudo ngrep -W byline -d any -q '^(INVITE|OPTIONS|REGISTER|BYE|ACK|CANCEL)' udp and port 5060
 ```
-
----
 
 ## Network Diagnostics
 
@@ -149,6 +155,7 @@ sudo nmap -sU -p 5060 --script sip-enum-users --script-args 'sip-enum-users.gues
     echo "Content-Length: 0"; echo;
   } | ncat -u <DEST_IP> 5060
   ```
+
 * **TCP with socat:**
 
   ```bash
@@ -166,8 +173,6 @@ sudo nmap -sU -p 5060 --script sip-enum-users --script-args 'sip-enum-users.gues
   EOF
   ```
 
----
-
 ## System & Disk
 
 ### htop / btop (process + resource monitors)
@@ -182,8 +187,6 @@ btop        # pretty, mouse-friendly
 ```bash
 sudo ncdu /var   # browse heavy directories
 ```
-
----
 
 ## Dev CLIs & Text Tools
 
@@ -232,8 +235,6 @@ pre-commit install
 pre-commit run --all-files
 ```
 
----
-
 ## IP/Routes/DNS Quick Checks
 
 ```bash
@@ -243,8 +244,6 @@ ss -tunap | rg 5060    # sockets touching 5060
 resolvectl status || cat /etc/resolv.conf
 ```
 
----
-
 ## Optional: pjsua (if you built it)
 
 ```bash
@@ -253,8 +252,6 @@ pjsua --id sip:me@client --registrar sip:<REGISTRAR_IP> \
 # Or quick call:
 pjsua sip:<DEST_IP>
 ```
-
----
 
 ### Notes
 
