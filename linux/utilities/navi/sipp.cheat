@@ -1,0 +1,123 @@
+# =========================
+# SIPp — day-to-day recipes
+# =========================
+# Conventions used below:
+# - {{dest}} can be IP:port or sip:uri (e.g., 10.0.0.5:5060 or sip:alice@pbx.local)
+# - {{local_ip}} / {{local_port}} pick your source interface/port
+# - {{scenario}} points to a .xml (or use built-ins like -sn uac, -sn uas, -sn options)
+# - Common rate knobs: -r (calls/sec), -rp (ms), -m (total calls), -l (concurrency)
+# - Auth: -au user, -ap pass
+# - Transport: -t u1 (UDP), -t t1 (TCP), -t l1 (TLS)
+
+# --- UAC / Call generation ---
+
+% UAC: simple INVITE using built-in scenario (UDP)
+    sipp {{dest}} -sn uac -i {{local_ip}} -p {{local_port}} -m {{total_calls}} -r {{rate_cps}} -rp {{rate_period_ms}} -l {{max_concurrency}}
+
+% UAC: custom scenario XML (INVITE flow)
+    sipp {{dest}} -sf {{scenario}} -i {{local_ip}} -p {{local_port}} -m {{total_calls}} -r {{rate_cps}} -rp {{rate_period_ms}} -l {{max_concurrency}}
+
+% UAC: set Request-URI user (-s) and From user (-au), with auth
+    sipp {{dest}} -sn uac -s {{called_user}} -au {{auth_user}} -ap {{auth_pass}} -i {{local_ip}} -p {{local_port}} -m {{total_calls}}
+
+% UAC: fixed call duration (ms) then BYE (handy for load)
+    sipp {{dest}} -sn uac -i {{local_ip}} -p {{local_port}} -d {{call_duration_ms}} -m {{total_calls}} -r {{rate_cps}} -l {{max_concurrency}}
+
+# --- UAS / Answering side ---
+
+% UAS: answer calls (basic)
+    sipp -sn uas -i {{local_ip}} -p {{listen_port}} -m {{max_calls_to_answer}}
+
+% UAS: custom scenario to act as callee
+    sipp -sf {{scenario}} -i {{local_ip}} -p {{listen_port}} -m {{max_calls_to_answer}}
+
+# --- OPTIONS ping (health checks) ---
+
+% OPTIONS ping (single shot)
+    sipp {{dest}} -sn options -i {{local_ip}} -p {{local_port}} -m 1
+
+% OPTIONS ping: sustained rate (synthetic monitoring)
+    sipp {{dest}} -sn options -i {{local_ip}} -p {{local_port}} -r {{rate_cps}} -rp {{rate_period_ms}} -m {{total_pings}}
+
+# --- Registration (REGISTER flows) ---
+
+% REGISTER: built-in scenario with auth
+    sipp {{registrar}} -sn uac_register -au {{username}} -ap {{password}} -i {{local_ip}} -p {{local_port}} -m {{registrations}}
+
+% REGISTER: custom scenario
+    sipp {{registrar}} -sf {{register_xml}} -i {{local_ip}} -p {{local_port}} -m {{registrations}}
+
+# --- Transport selection ---
+
+% Use TCP (-t t1)
+    sipp {{dest}} -sn uac -t t1 -i {{local_ip}} -p {{local_port}} -m {{total_calls}}
+
+% Use TLS (-t l1) with optional certs
+    sipp {{dest}} -sn uac -t l1 -i {{local_ip}} -p {{local_port}} -m {{total_calls}} {{tls_options}}
+
+# Provide TLS options (paste into prompt as needed), e.g.:
+#   -tls_cert /path/cert.pem -tls_key /path/key.pem -tls_trusted_root /path/ca.pem
+
+# --- Rate & concurrency control patterns ---
+
+% Ramp at N cps with ceiling on in-flight calls
+    sipp {{dest}} -sn uac -i {{local_ip}} -p {{local_port}} -r {{rate_cps}} -rp {{rate_period_ms}} -l {{max_concurrency}} -m {{total_calls}}
+
+% Burst mode: all calls ASAP, cap concurrency
+    sipp {{dest}} -sn uac -i {{local_ip}} -p {{local_port}} -l {{max_concurrency}} -m {{total_calls}}
+
+# --- Data driving (CSV) ---
+
+% Drive variables from CSV (-inf)
+    sipp {{dest}} -sf {{scenario}} -inf {{csv_path}} -i {{local_ip}} -p {{local_port}} -m {{total_calls}}
+
+# CSV format tip:
+#   SEQUENTIAL;field1;field2;field3
+#   1001;alice;password1
+#   1002;bob;password2
+# In scenario XML, reference with [field0], [field1], etc.
+
+# --- Tracing / diagnostics ---
+
+% Verbose SIP message trace to file (pcap-like SIP, not RTP)
+    sipp {{dest}} -sn uac -i {{local_ip}} -p {{local_port}} -trace_msg -message_file {{sip_trace_log}} -trace_err -trace_shortmsg
+
+% Console-only quick debug
+    sipp {{dest}} -sn uac -i {{local_ip}} -p {{local_port}} -trace_screen -trace_err
+
+% Stats to CSV (throughput, latency buckets, etc.)
+    sipp {{dest}} -sn uac -i {{local_ip}} -p {{local_port}} -trace_stat -stf {{stats_csv}}
+
+# --- Media knobs (basic) ---
+
+% Bind media/RTP base port (useful behind firewalls)
+    sipp {{dest}} -sn uac -i {{local_ip}} -p {{local_port}} -mp {{media_port_base}} -m {{total_calls}}
+
+% Echo RTP back (simple media sanity)
+    sipp {{dest}} -sn uac -i {{local_ip}} -p {{local_port}} -rtp_echo -m {{total_calls}}
+
+# --- Targeting and headers ---
+
+% Send to specific Contact/To user (-s) and add custom header
+    sipp {{dest}} -sn uac -s {{user}} -i {{local_ip}} -p {{local_port}} -m {{total_calls}} -key hdr1 "{{header_value}}"
+
+# NOTE: In your scenario XML, include: <send>... [hdr1] ...</send>
+
+# --- Failure handling & seeds ---
+
+% Fixed random seed (repeatability)
+    sipp {{dest}} -sn uac -i {{local_ip}} -p {{local_port}} -seed {{seed}} -m {{total_calls}}
+
+% Retransmission tuning (advanced)
+    sipp {{dest}} -sn uac -i {{local_ip}} -p {{local_port}} -rtx {{rtx_ms}} -m {{total_calls}}
+
+# --- Quick one-liners you’ll actually use ---
+
+% One-shot call: invite & hang up after N ms
+    sipp {{dest}} -sn uac -i {{local_ip}} -p {{local_port}} -d {{call_duration_ms}} -m 1
+
+% Health check sweep: 100 OPTIONS at 5 cps
+    sipp {{dest}} -sn options -i {{local_ip}} -p {{local_port}} -r 5 -m 100
+
+% UAS sandbox on port 5070
+    sipp -sn uas -i {{local_ip}} -p 5070 -m {{max_calls_to_answer}}

@@ -1,0 +1,51 @@
+# =========================
+# sngrep — SIP call tracing
+# =========================
+# Notes:
+# - Live capture needs privileges (dumpcap caps or sudo).
+# - Space selects dialogs, ENTER opens flow, F7 filters, F2 save.
+# - Useful keys: F1 help, F2 save (pcap/txt), F3 search, F5 clear.
+
+# --- Live capture ---
+
+% Live capture on interface (UDP/TCP/TLS)
+    sudo sngrep -d {{iface}}
+
+% Live capture on all interfaces (no name resolution)
+    sudo sngrep -d any -N
+
+% Live capture, BPF filter (host/port)
+    sudo sngrep -d {{iface}} port {{sip_port}}
+
+# --- Read / write PCAPs ---
+
+% Open a PCAP for browsing
+    sngrep -r {{pcap_path}}
+
+% Capture live and write all seen SIP to PCAP
+    sudo sngrep -d {{iface}} -O {{out_pcap}}
+
+# --- Pre-filtering quickly ---
+
+% Start with a display filter for a user/URI
+    sudo sngrep -d {{iface}} -F {{filter_expr}}
+# Examples to paste at prompt:
+#   "sip contains INVITE"
+#   "sip.to.user == \"{{user}}\""
+#   "ip.src == {{ip}} || ip.dst == {{ip}}"
+
+# --- Common workflows (interactive) ---
+
+% Show only REGISTERs live (press F7 in UI to refine)
+    sudo sngrep -d {{iface}} -F "sip.Method == REGISTER"
+
+% Show only a single Call-ID (when you already know it)
+    sudo sngrep -d {{iface}} -F "sip.Call-ID == \"{{call_id}}\""
+
+% Open PCAP then save selected dialogs to PCAP (F2 after selecting)
+    sngrep -r {{pcap_path}}
+
+# --- RTP peek from sngrep (open flow first, then F3) ---
+
+% Tip reminder: Open flow (ENTER) → F3 RTP view
+    echo "Open a dialog with ENTER, press F3 to inspect RTP (if present)"

@@ -1,0 +1,69 @@
+# ===========================================
+# SIPPTS — SIP recon & auth testing modules
+# ===========================================
+# Ethical note: Use only on systems you own or are authorized to test.
+
+# Core CLI: `sippts <command> [options]`
+# Common commands: scan, exten, rcrack, enumerate, send, invite, leak, dump, flood, ping, pcapdump, sniff
+# Install (one option): git clone && pip3 install .   # See project README.
+
+# --- Discovery: scan ---
+
+% Scan a /24 over UDP: OPTIONS on default port
+    sippts scan -i {{cidr}} -p udp -m options
+
+% Scan multiple nets/ports, all transports, custom UA
+    sippts scan -i {{targets}} -r {{ports}} -p all -m options -ua "{{user_agent}}" -th {{threads}}
+
+% Scan over TLS for 5061
+    sippts scan -i {{cidr}} -p tls -r 5061 -m options
+
+# --- Extension enumeration: exten ---
+
+% Find extensions 100-999 via REGISTER
+    sippts exten -i {{target_ip}} -r {{port}} -e 100-999 -p udp
+
+% Filter for only 200 OK (registered) results
+    sippts exten -i {{target_ip}} -r {{port}} -e {{range}} -rc 200
+
+# --- Remote password check: rcrack ---
+
+% Test creds for a user list against a host:port
+    sippts rcrack -i {{target_ip}} -r {{port}} -U {{users_file}} -P {{passwords_file}} -p {{proto}}
+
+# --- Capabilities & behavior: enumerate / send / invite ---
+
+% Enumerate allowed SIP methods
+    sippts enumerate -i {{target_ip}} -r {{port}} -p {{proto}}
+
+% Craft and send a custom SIP message, then analyze response
+    sippts send -i {{target_ip}} -r {{port}} -p {{proto}} -m {{method}} -d {{domain}} -ua "{{user_agent}}"
+
+% Check for unauthenticated calling (misconfig test)
+    sippts invite -i {{target_ip}} -r {{port}} -p {{proto}} -d {{domain}} -s {{dst_user}}
+
+# --- Vulnerability checks (examples) ---
+
+% SIP Digest leak probe
+    sippts leak -i {{target_ip}} -r {{port}} -p {{proto}}
+
+% RTP/RTCP bleed checks (where applicable)
+    sippts rtpbleed      -i {{target_ip}} -r {{port}}
+    sippts rtcpbleed     -i {{target_ip}} -r {{port}}
+
+# --- PCAP / offline ---
+
+% Extract SIP digest auths from a PCAP
+    sippts dump -f {{pcap_path}}
+
+% Triage a large PCAP focusing on RTP and carve to new PCAP
+    sippts tshark -f {{pcap_path}} -rtp_extract -o {{rtp_out_pcap}} -r {{rtp_port}}
+# (This invokes SIPPTS’ helper around tshark parsing.)
+
+# --- Misc traffic tests ---
+
+% SIP flood (use carefully, lab only)
+    sippts flood -i {{target_ip}} -r {{port}} -p {{proto}} -m {{method}} -th {{threads}}
+
+% Ping-like OPTIONS reachability
+    sippts ping -i {{target_ip}} -r {{port}} -p {{proto}}

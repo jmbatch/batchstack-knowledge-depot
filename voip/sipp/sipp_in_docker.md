@@ -50,7 +50,10 @@ docker build -t sipp .
 ## 3. Pull a Prebuilt SIPp Docker Image (Optional)
 
 - If you prefer not to create your own image, you can use a prebuilt image from Docker Hub. For example:
+
+```bash
 docker pull ghcr.io/sipp/sipp:latest
+```
 
 ## 4. Running SIPp in a Docker Container
 
@@ -59,7 +62,11 @@ docker pull ghcr.io/sipp/sipp:latest
 ### Example 1: Running SIPp with Default Settings
 
 - You can start SIPp using a prebuilt image directly:
+
+```bash
 docker run -it --rm ghcr.io/sipp/sipp:latest -sn uac 192.168.1.100:5060
+```
+
 - `-it`  # allows you to interact with the container.
 - `--rm`  # will automatically remove the container after it stops.
 - `-sn uac`  # is an example scenario (UAC - User Agent Client).
@@ -87,9 +94,15 @@ docker run -it --rm ghcr.io/sipp/sipp:latest -sn uas
 ## 6. Running SIPp as a Client (SIPp UAC)
 
 If you want to test against a server (SIPp UAC mode):
+
+```bash
 docker run -it --rm ghcr.io/sipp/sipp:latest -sn uac 192.168.1.100:5060
+```
 
 ## 7. Accessing SIPp Logs and Output
 
 To collect logs or output from SIPp, you can either view the logs inside the container or map a volume to your host system:
+
+```bash
 docker run -it --rm -v /path/to/logs:/sipp/logs ghcr.io/sipp/sipp:latest -sn uac 192.168.1.100:5060 > /sipp/logs/output.log
+```

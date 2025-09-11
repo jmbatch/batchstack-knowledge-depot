@@ -1,0 +1,58 @@
+# =========================
+# tshark — SIP/RTP one-liners
+# =========================
+# Rules of thumb:
+# - Use -f for capture filter (BPF), -Y for display filter, -w to write PCAP.
+# - Ring buffers (-b) are gold for long runs.
+# - Add -o rtp.heuristic_rtp:TRUE to decode loose RTP when needed.
+
+# --- Live capture basics ---
+
+% Live: SIP on iface to file
+    sudo tshark -i {{iface}} -f "port {{sip_port}}" -w {{out_pcap}}
+
+% Live: SIP + RTP (rough catch-all) to file
+    sudo tshark -i {{iface}} -f "port {{sip_port}} or udp" -Y "sip || rtp || rtcp" -w {{out_pcap}}
+
+% Live: Heuristic RTP decoding
+    sudo tshark -i {{iface}} -o rtp.heuristic_rtp:TRUE -Y "rtp || rtcp" -w {{out_pcap}}
+
+# --- Ring buffer for continuous capture ---
+
+% Ring buffer by file size (50 files x 100 MB)
+    sudo tshark -i {{iface}} -f "port {{sip_port}} or udp" -Y "sip || rtp || rtcp" \
+      -b files:50 -b filesize:100000 -w {{dir}}/voip.pcap
+
+% Ring buffer by time (1 file per hour, keep 48)
+    sudo tshark -i {{iface}} -f "port {{sip_port}} or udp" -Y "sip || rtp || rtcp" \
+      -b duration:3600 -b files:48 -w {{dir}}/voip-%F-%H.pcap
+
+# --- Reading PCAPs / carving ---
+
+% List SIP dialogs quickly
+    tshark -r {{pcap_path}} -Y sip -T fields -e frame.time -e ip.src -e ip.dst -e sip.Call-ID
+
+% Extract only RTP streams to a new PCAP
+    tshark -r {{pcap_path}} -Y rtp -w {{rtp_only_pcap}}
+
+% Extract RTCP with problems (loss/jitter thresholds)
+    tshark -r {{pcap_path}} -Y "rtcp && (rtcp.ssrc.fraction >= 1 || rtcp.ssrc.jitter >= 240)" -V
+
+# --- Targeted filters you can paste into -Y ---
+
+% Only INVITEs
+    sip.Method == "INVITE"
+
+% A specific Call-ID
+    sip.Call-ID == "{{call_id}}"
+
+% From/To users (P-Asserted/Preferred Identity aware)
+    sip.from.user == "{{user}}" || sip.to.user == "{{user}}" || sip.PAI.user == "{{user}}" || sip.PPI.user == "{{user}}"
+
+% RTP from a given SSRC
+    rtp.ssrc == {{ssrc_hex}}
+
+# --- QoS-ish at-a-glance ---
+
+% Show RTP seq/ts/ssrc/jitter (read)
+    tshark -r {{pcap_path}} -Y rtp -T fields -e frame.number -e rtp.seq -e rtp.timestamp -e rtp.ssrc -e rtp.marker -e rtp.p_type -e rtp.jitter

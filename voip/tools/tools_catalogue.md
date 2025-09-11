@@ -7,9 +7,9 @@
   - INVITE/REGISTER/OPTIONS, timers, branching
 
 - pjsua / PJSIP (pjsua2):
-- Scriptable SIP UA for interop
-- TLS/SRTP
-- header gymnastics
+  - Scriptable SIP UA for interop
+  - TLS/SRTP
+  - header gymnastics
 
 - baresip:
   - CLI softphone
