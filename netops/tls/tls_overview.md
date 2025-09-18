@@ -100,7 +100,7 @@ You can simulate the full cert lifecycle locally:
     openssl genrsa -out intermediate.key 4096
     openssl req -new -key intermediate.key -out intermediate.csr
     openssl x509 -req -in intermediate.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial \
-        -out server.crt -days 365 -sha256
+        -out intermediate.crt -days 365 -sha256
     ```
 
 3. Issue a Server Certification (signed by intermediate)
