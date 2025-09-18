@@ -150,13 +150,13 @@ openssl verify -CAfile rootCA.crt -untrusted fullchain.crt server.crt
 
 ## 5. Test with a Local Server
 
-    ```bash
-    # Run a test TLS server
-    openssl s_server -key server.key -cert fullchain.crt -port 8443
+```bash
+# Run a test TLS server
+openssl s_server -key server.key -cert fullchain.crt -port 8443
 
-    # Connect as client
-    openssl s_client -connect localhost:8443 -CAfile rootCA.crt
-    ```
+# Connect as client
+openssl s_client -connect localhost:8443 -CAfile rootCA.crt
+```
 
 ## 5. What's been covered
 
