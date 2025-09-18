@@ -87,44 +87,68 @@ openssl verify -CAfile ca-chain.crt server.crt
 
 You can simulate the full cert lifecycle locally:
 
-1. Create a Root CA (self-signed)
+```bash
+# ===== Vars you can tweak once =====
+ROOT_DN='/C=US/ST=NC/L=Raleigh/O=BatchStack/CN=BatchStack Root CA'
+INT_DN='/C=US/ST=NC/L=Raleigh/O=BatchStack/CN=BatchStack Intermediate CA'
+SRV_CN='asterisk.local'    # put your FQDN here
+DAYS_ROOT=3650             # ~10 years
+DAYS_INT=1825              # ~5 years
+DAYS_SRV=825               # browser-y max, fine for servers
 
-    ```bash
-    openssl genrsa -out rootCA.key 4096
-    openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.crt
-    ```
+# ===== (A) ROOT CA (self-signed) =====
+openssl genrsa -out rootCA.key 4096
+openssl req -x509 -new -nodes -key rootCA.key -sha256 -days "$DAYS_ROOT" \
+  -subj "$ROOT_DN" \
+  -out rootCA.crt \
+  -addext "basicConstraints=critical,CA:true" \
+  -addext "keyUsage=critical,keyCertSign,cRLSign" \
+  -addext "subjectKeyIdentifier=hash"
 
-2. Create an intermediate CA
+# ===== (B) INTERMEDIATE CA (signed by root) =====
+openssl genrsa -out intermediate.key 4096
+openssl req -new -key intermediate.key -subj "$INT_DN" -out intermediate.csr
 
-    ```bash
-    openssl genrsa -out intermediate.key 4096
-    openssl req -new -key intermediate.key -out intermediate.csr
-    openssl x509 -req -in intermediate.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial \
-        -out intermediate.crt -days 365 -sha256
-    ```
+# sign intermediate with proper CA extensions (pathlen=0 keeps it simple)
+openssl x509 -req -in intermediate.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial \
+  -out intermediate.crt -days "$DAYS_INT" -sha256 \
+  -extfile <(cat <<EOF
+basicConstraints=critical,CA:true,pathlen:0
+keyUsage=critical,keyCertSign,cRLSign
+authorityKeyIdentifier=keyid,issuer
+subjectKeyIdentifier=hash
+EOF
+)
 
-3. Issue a Server Certification (signed by intermediate)
+# ===== (C) SERVER cert (signed by intermediate) =====
+openssl genrsa -out server.key 2048
+openssl req -new -key server.key -subj "/CN=${SRV_CN}" -out server.csr
 
-    ```bash
-    openssl genrsa -out server.key 2048
-    openssl req -new -key server.key -out server.csr
-    openssl x509 -req -in server.csr -CA intermediate.crt -CAkey intermediate.key -CAcreateserial \
-        -out server.crt -days 365 -sha256
-    ```
+# include SAN + EKU for TLS servers
+openssl x509 -req -in server.csr -CA intermediate.crt -CAkey intermediate.key -CAcreateserial \
+  -out server.crt -days "$DAYS_SRV" -sha256 \
+  -extfile <(cat <<EOF
+basicConstraints=critical,CA:false
+keyUsage=critical,digitalSignature,keyEncipherment
+extendedKeyUsage=serverAuth
+subjectAltName=DNS:${SRV_CN}
+authorityKeyIdentifier=keyid,issuer
+subjectKeyIdentifier=hash
+EOF
+)
 
-4. Bundle the Chain
+# ===== (D) Build the app bundle (NO ROOT inside) =====
+cat server.crt intermediate.crt > fullchain.crt
 
-    ```bash
-    cat server.crt intermediate.crt > fullchain.crt
-    ```
+# ===== (E) Verify correctly =====
+# Best: pass the intermediate as "untrusted" and root as trusted:
+openssl verify -CAfile rootCA.crt -untrusted intermediate.crt server.crt
 
-5. Verify the chain
+# Also fine if your fullchain starts with the LEAF then the intermediate:
+openssl verify -CAfile rootCA.crt -untrusted fullchain.crt server.crt
+```
 
-    ```bash
-    openssl verify -CAfile rootCA.crt fullchain.crt
-    ```
-
-6. Test with a Local Server
+## 5. Test with a Local Server
 
     ```bash
     # Run a test TLS server
