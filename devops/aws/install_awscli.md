@@ -16,6 +16,13 @@ aws --version
 aws configure
 ```
 
+- Credentials are written the users home directory
+
+```bash
+~/.aws/credentials
+~/.aws/config
+```
+
 ## 3. Verify Authentication
 
 ```bash

@@ -54,3 +54,12 @@ resource "aws_instance" "example" {
   }
 }
 ```
+
+## 6. Run terraform lifecycle
+
+```bash
+terraform init
+terraform plan
+terraform apply
+terraform destroy
+```
